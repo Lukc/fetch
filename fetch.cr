@@ -49,7 +49,7 @@ if destination != "" && uris.size > 1
 end
 
 uris.each do |uri|
-	destfile = if destination
+	destfile = if destination != ""
 		destination
 	else
 		File.basename uri.path.to_s
