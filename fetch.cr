@@ -70,15 +70,21 @@ uris.each do |uri|
 	if ! uri.scheme
 		file << File.read uri.path.to_s
 	elsif uri.scheme =~ /https?/
-		HTTP::Client.get uri do |response|
+		while true
+			response = HTTP::Client.get uri
+
 			if response.status_code == 200
-				while str = response.body_io.gets
-					file << str
-				end
+				file << response.body
+
+				break
+			elsif response.status_code == 301
+				uri = response.headers["Location"]
 			else
 				STDERR << " Could not download that {{#{response.status_code}}}.\n"
 
 				errors += 1
+
+				break
 			end
 		end
 	else
